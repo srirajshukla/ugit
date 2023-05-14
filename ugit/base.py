@@ -18,7 +18,7 @@ def write_tree(directory="."):
             type_ = "tree"
             oid = write_tree(entry)
 
-        entries.append((entry, oid, type_))
+        entries.append((entry.name, oid, type_))
 
     tree = "".join(f"{type_} {oid} {name}\n" for name, oid, type_ in sorted(entries))
     print(tree)
@@ -46,7 +46,7 @@ def get_tree(oid, base_path=""):
         if type_ == "blob":
             result[path] = oid
         elif type_ == "tree":
-            result.update(get_tree(oid, f"{path}/"))
+            result.update(get_tree(oid, f"{path}"))
         else:
             raise ValueError(f"Unknown type {type_}")
     return result
@@ -54,7 +54,7 @@ def get_tree(oid, base_path=""):
 
 def _empty_current_directory():
     for root, dirnames, filenames in os.walk(".", topdown=False):
-        for filename in filename:
+        for filename in filenames:
             path = pathlib.Path(root, filename)
             if is_ignored(path) or not os.path.isfile(path):
                 continue
@@ -73,7 +73,10 @@ def _empty_current_directory():
 def read_tree(tree_oid):
     _empty_current_directory()
     for path, oid in get_tree(tree_oid, base_path="./").items():
-        os.makedirs(path, exist_ok=True)
+        path_root = os.path.dirname(path)
+        if path_root != "":
+            os.makedirs(path_root, exist_ok=True)
+
         with open(path, "wb") as f:
             f.write(data.get_object(oid=oid))
 
