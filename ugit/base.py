@@ -26,15 +26,6 @@ def write_tree(directory="."):
     return data.hash_object(tree.encode(), "tree")
 
 
-def is_ignored(path):
-    ignore_dirs = [".git", ".ugit", "ugit.egg-info", "__pycache__"]
-    path_parts = pathlib.Path(path).parts
-    for igd in ignore_dirs:
-        if igd in path_parts:
-            return True
-    return False
-
-
 def _iter_tree_entries(oid):
     if not oid:
         return
@@ -61,8 +52,36 @@ def get_tree(oid, base_path=""):
     return result
 
 
+def _empty_current_directory():
+    for root, dirnames, filenames in os.walk(".", topdown=False):
+        for filename in filename:
+            path = pathlib.Path(root, filename)
+            if is_ignored(path) or not os.path.isfile(path):
+                continue
+            os.remove(path)
+
+        for dirname in dirnames:
+            path = pathlib.Path(root, dirname)
+            if is_ignored(path):
+                continue
+            try:
+                os.rmdir(path)
+            except (FileNotFoundError, OSError) as e:
+                pass
+
+
 def read_tree(tree_oid):
+    _empty_current_directory()
     for path, oid in get_tree(tree_oid, base_path="./").items():
         os.makedirs(path, exist_ok=True)
         with open(path, "wb") as f:
             f.write(data.get_object(oid=oid))
+
+
+def is_ignored(path):
+    ignore_dirs = [".git", ".ugit", "ugit.egg-info", "__pycache__"]
+    path_parts = pathlib.Path(path).parts
+    for igd in ignore_dirs:
+        if igd in path_parts:
+            return True
+    return False
