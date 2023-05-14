@@ -82,7 +82,13 @@ def read_tree(tree_oid):
 
 
 def commit(message):
-    commit_m = f"tree {write_tree()}\n" f"\n" f"{message}\n"
+    commit_m = f"tree {write_tree()}\n"
+
+    HEAD = data.get_HEAD()
+    if HEAD:
+        commit_m += f"parent {HEAD}\n"
+
+    commit_m += f"\n{message}\n"
 
     oid = data.hash_object(commit_m.encode(), type_="commit")
     data.set_HEAD(oid)

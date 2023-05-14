@@ -38,3 +38,8 @@ def get_object(oid, expected_type=None):
 
 def set_HEAD(oid):
     (GIT_DIR / "HEAD").write_text(oid)
+
+
+def get_HEAD():
+    if os.path.isfile((GIT_DIR / "HEAD")):
+        return (GIT_DIR / "HEAD").read_text().strip()
