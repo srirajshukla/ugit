@@ -81,6 +81,15 @@ def read_tree(tree_oid):
             f.write(data.get_object(oid=oid))
 
 
+def commit(message):
+    commit_m = f"tree {write_tree()}\n" f"\n" f"{message}\n"
+
+    oid = data.hash_object(commit_m.encode(), type_="commit")
+    data.set_HEAD(oid)
+
+    return oid
+
+
 def is_ignored(path):
     ignore_dirs = [".git", ".ugit", "ugit.egg-info", "__pycache__"]
     path_parts = pathlib.Path(path).parts
