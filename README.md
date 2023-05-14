@@ -1,5 +1,12 @@
 # UGIT - a small git like vcs
 
+## Installation
+### Dev Version
+```
+python setup.py develop --user
+pip install -e .
+```
+
 ## Commands 
 1. ugit write-tree
     Writes the current state of the directories to object store
