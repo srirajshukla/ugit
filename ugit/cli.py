@@ -17,6 +17,11 @@ def parse_args():
     commands = parser.add_subparsers(dest="command")
     commands.required = True
 
+    # Creating oid as type parsing function allows us to use
+    # refs and oid interchangeably, as the oids corresponding
+    # to the refs will be returned by this function
+    oid = base.get_oid
+
     init_parser = commands.add_parser("init")
     init_parser.set_defaults(func=init)
 
@@ -25,14 +30,14 @@ def parse_args():
     hash_object_parser.set_defaults(func=hash_object)
 
     cat_file_parser = commands.add_parser("cat-file")
-    cat_file_parser.add_argument("object")
+    cat_file_parser.add_argument("object", type=oid)
     cat_file_parser.set_defaults(func=cat_file)
 
     write_tree_parser = commands.add_parser("write-tree")
     write_tree_parser.set_defaults(func=write_tree)
 
     read_tree_parser = commands.add_parser("read-tree")
-    read_tree_parser.add_argument("tree")
+    read_tree_parser.add_argument("tree", type=oid)
     read_tree_parser.set_defaults(func=read_tree)
 
     commit_parser = commands.add_parser("commit")
@@ -40,16 +45,16 @@ def parse_args():
     commit_parser.set_defaults(func=commit)
 
     log_parser = commands.add_parser("log")
-    log_parser.add_argument("oid", nargs="?")
+    log_parser.add_argument("oid", nargs="?", type=oid)
     log_parser.set_defaults(func=log)
 
     checkout_parser = commands.add_parser("checkout")
-    checkout_parser.add_argument("oid")
+    checkout_parser.add_argument("oid", type=oid)
     checkout_parser.set_defaults(func=checkout)
 
     tag_parser = commands.add_parser("tag")
     tag_parser.add_argument("name")
-    tag_parser.add_argument("oid", nargs="?")
+    tag_parser.add_argument("oid", nargs="?", type=oid)
     tag_parser.set_defaults(func=tag)
 
     return parser.parse_args()

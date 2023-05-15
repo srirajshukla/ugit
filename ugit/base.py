@@ -131,6 +131,14 @@ def get_commit(oid):
     return Commit(tree=tree, parent=parent, message=message)
 
 
+def get_oid(name):
+    # If the "name" is a ref, we will get the oid corresponding
+    # to that ref from `data.get_ref` function
+    # Otherwise, if the name is not a ref, and an oid, we will
+    # just return the oid (name)
+    return data.get_ref(name) or name
+
+
 def is_ignored(path):
     ignore_dirs = [".git", ".ugit", "ugit.egg-info", "__pycache__"]
     path_parts = pathlib.Path(path).parts
