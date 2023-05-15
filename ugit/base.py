@@ -3,6 +3,7 @@ import pathlib
 import itertools
 import operator
 from collections import namedtuple
+import string
 
 from . import data
 
@@ -136,7 +137,32 @@ def get_oid(name):
     # to that ref from `data.get_ref` function
     # Otherwise, if the name is not a ref, and an oid, we will
     # just return the oid (name)
-    return data.get_ref(name) or name
+
+    # The refs can be in either of these directories or files:
+    # Root (.ugit) -> refs/tags/{tagname}
+    # .ugit/refs -> tags/{tagname}
+    # .ugit/refs/{tags} -> {tagname}
+    # .ugit/refs/heads
+
+    refs_to_try = [
+        f"{name}",
+        f"refs/{name}",
+        f"refs/tags/{name}",
+        f"refs/heads/{name}",
+    ]
+
+    for ref in refs_to_try:
+        rec_ref = data.get_ref(ref)
+        if rec_ref is not None:
+            return rec_ref
+
+    # Check if the name is a sha1 hash or not
+    # A SHA1 is a random 40-digit hexidecimal number
+    is_hex = all(c in string.hexdigits for c in name)
+    if len(name) == 40 and is_hex:
+        return name
+
+    raise ValueError(f"Unknown ref or oid: {name}")
 
 
 def is_ignored(path):
