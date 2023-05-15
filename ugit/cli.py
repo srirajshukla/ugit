@@ -47,6 +47,11 @@ def parse_args():
     checkout_parser.add_argument("oid")
     checkout_parser.set_defaults(func=checkout)
 
+    tag_parser = commands.add_parser("tag")
+    tag_parser.add_argument("name")
+    tag_parser.add_argument("oid", nargs="?")
+    tag_parser.set_defaults(func=tag)
+
     return parser.parse_args()
 
 
@@ -95,3 +100,8 @@ def log(args):
 
 def checkout(args):
     base.checkout(args.oid)
+
+
+def tag(args):
+    oid = args.oid or data.get_ref("HEAD")
+    base.create_tag(args.name, oid)

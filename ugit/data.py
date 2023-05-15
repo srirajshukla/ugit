@@ -37,9 +37,13 @@ def get_object(oid, expected_type=None):
 
 
 def update_ref(ref, oid):
-    (GIT_DIR / ref).write_text(oid)
+    ref_path = (GIT_DIR/ref)
+    os.makedirs(os.path.dirname(ref_path), exist_ok=True)
+
+    ref_path.write_text(oid)
 
 
 def get_ref(ref):
-    if os.path.isfile((GIT_DIR / ref)):
-        return (GIT_DIR / ref).read_text().strip()
+    ref_path = (GIT_DIR/ref)
+    if os.path.isfile(ref_path):
+        return ref_path.read_text().strip()
