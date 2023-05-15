@@ -81,7 +81,7 @@ def commit(args):
 
 
 def log(args):
-    oid = args.oid or data.get_HEAD()
+    oid = args.oid or data.get_ref("HEAD")
 
     while oid:
         commit = base.get_commit(oid)

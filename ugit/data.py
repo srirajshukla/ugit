@@ -36,10 +36,10 @@ def get_object(oid, expected_type=None):
     return content
 
 
-def set_HEAD(oid):
-    (GIT_DIR / "HEAD").write_text(oid)
+def update_ref(ref, oid):
+    (GIT_DIR / ref).write_text(oid)
 
 
-def get_HEAD():
-    if os.path.isfile((GIT_DIR / "HEAD")):
-        return (GIT_DIR / "HEAD").read_text().strip()
+def get_ref(ref):
+    if os.path.isfile((GIT_DIR / ref)):
+        return (GIT_DIR / ref).read_text().strip()
