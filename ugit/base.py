@@ -138,6 +138,10 @@ def get_oid(name):
     # Otherwise, if the name is not a ref, and an oid, we will
     # just return the oid (name)
 
+    # "@" is an alias for "HEAD"
+    if name == "@":
+        name = "HEAD"
+
     # The refs can be in either of these directories or files:
     # Root (.ugit) -> refs/tags/{tagname}
     # .ugit/refs -> tags/{tagname}
