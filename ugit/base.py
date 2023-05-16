@@ -132,6 +132,21 @@ def get_commit(oid):
     return Commit(tree=tree, parent=parent, message=message)
 
 
+def iter_commits_and_parents(oids):
+    oids = set(oids)
+    visited = set()
+
+    while oids:
+        oid = oids.pop()
+        if not oid or oid in visited:
+            continue
+        visited.add(oid)
+        yield oid
+
+        commit = get_commit(oid)
+        oids.add(commit.parent)
+
+
 def get_oid(name):
     # If the "name" is a ref, we will get the oid corresponding
     # to that ref from `data.get_ref` function
