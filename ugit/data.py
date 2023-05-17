@@ -52,16 +52,22 @@ RefValue = namedtuple("RefValue", ["symbolic", "value"])
 
 
 def update_ref(ref, value: RefValue, deref=True):
-    if value.symbolic:
-        raise ValueError(f"Expected a value, got a symbolic ref {value.symbolic}")
-
     # The ref can be symbolic or direct
     # Get the last ref that points to an OID
     ref = _get_ref_internal(ref, deref)[0]
+
+    if not ref.value:
+        raise ValueError(f"Received no value for ref {ref}")
+
+    if value.symbolic:
+        value = f"ref: {value.value}"
+    else:
+        value = value.value
+
     ref_path = GIT_DIR / ref
     os.makedirs(os.path.dirname(ref_path), exist_ok=True)
 
-    ref_path.write_text(value.value)
+    ref_path.write_text(value)
 
 
 def get_ref(ref, deref=True):
