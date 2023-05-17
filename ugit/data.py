@@ -16,7 +16,7 @@ def init():
         return False
 
 
-def iter_refs(deref=True):
+def iter_refs(prefix="", deref=True):
     refs = ["HEAD"]
     for root, _dirnames, filenames in os.walk((GIT_DIR / "refs")):
         root = os.path.relpath(root, GIT_DIR).replace("\\", "/")
@@ -24,6 +24,8 @@ def iter_refs(deref=True):
 
     # Yeild name, oid pairs
     for refname in refs:
+        if not refname.startswith(prefix):
+            continue
         yield refname, get_ref(refname, deref=deref)
 
 
