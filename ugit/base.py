@@ -175,7 +175,7 @@ def get_oid(name):
     ]
 
     for ref in refs_to_try:
-        rec_ref = data.get_ref(ref).value
+        rec_ref = data.get_ref(ref, deref=False).value
         if rec_ref is not None:
             return rec_ref
 

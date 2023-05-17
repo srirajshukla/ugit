@@ -16,7 +16,7 @@ def init():
         return False
 
 
-def iter_refs():
+def iter_refs(deref=True):
     refs = ["HEAD"]
     for root, _dirnames, filenames in os.walk((GIT_DIR / "refs")):
         root = os.path.relpath(root, GIT_DIR).replace("\\", "/")
@@ -24,7 +24,7 @@ def iter_refs():
 
     # Yeild name, oid pairs
     for refname in refs:
-        yield refname, get_ref(refname)
+        yield refname, get_ref(refname, deref=deref)
 
 
 def hash_object(data, type_="blob"):
@@ -51,21 +51,35 @@ def get_object(oid, expected_type=None):
 RefValue = namedtuple("RefValue", ["symbolic", "value"])
 
 
-def update_ref(ref, value: RefValue):
+def update_ref(ref, value: RefValue, deref=True):
     if value.symbolic:
         raise ValueError(f"Expected a value, got a symbolic ref {value.symbolic}")
 
+    # The ref can be symbolic or direct
+    # Get the last ref that points to an OID
+    ref = _get_ref_internal(ref, deref)[0]
     ref_path = GIT_DIR / ref
     os.makedirs(os.path.dirname(ref_path), exist_ok=True)
 
     ref_path.write_text(value.value)
 
 
-def get_ref(ref):
+def get_ref(ref, deref=True):
+    _get_ref_internal(ref, deref)[1]
+
+
+def _get_ref_internal(ref, deref=True):
     # Refs can be either direct references to a commit or
     # symbolic references to another ref
     # Symbolic refs are in the format: "ref: {ref}"
     # Direct refs simply contain the oid of the commit
+
+    # When given a non-symbolic ref, _get_ref_internal
+    #  will return the ref name and value.
+    # When given a symbolic ref, _get_ref_internal will
+    # dereference the ref recursively, and then return
+    # the name of the last (non-symbolic) ref that
+    # points to an OID, plus its value.
 
     ref_path = GIT_DIR / ref
     value = None
@@ -73,7 +87,10 @@ def get_ref(ref):
     if os.path.isfile(ref_path):
         value = ref_path.read_text().strip()
 
-    if value and value.startswith("ref:"):
-        return get_ref(value.split(":", 1)[1].strip())
+    symbolic = bool(value) and value.startswith("ref:")
+    if symbolic:
+        value = value.split(":", 1)[1].strip()
+        if deref:
+            return _get_ref_internal(value)
 
-    return RefValue(symbolic=False, value=value)
+    return ref, RefValue(symbolic=symbolic, value=value)
