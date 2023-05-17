@@ -50,7 +50,7 @@ def parse_args():
     log_parser.set_defaults(func=log)
 
     checkout_parser = commands.add_parser("checkout")
-    checkout_parser.add_argument("oid", type=oid)
+    checkout_parser.add_argument("commit")
     checkout_parser.set_defaults(func=checkout)
 
     tag_parser = commands.add_parser("tag")
@@ -109,7 +109,7 @@ def log(args):
 
 
 def checkout(args):
-    base.checkout(args.oid)
+    base.checkout(args.commit)
 
 
 def tag(args):
