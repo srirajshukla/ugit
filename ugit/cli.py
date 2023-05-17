@@ -70,8 +70,8 @@ def parse_args():
 
 
 def init(args):
-    dir_created = data.init()
-    if dir_created:
+    created = base.init()
+    if created:
         print(f"Initialized empty ugit repository in {os.getcwd()}\{data.GIT_DIR}")
     else:
         print(f"Ugit repo already exists at {os.getcwd()}")

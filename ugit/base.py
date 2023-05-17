@@ -8,6 +8,15 @@ import string
 from . import data
 
 
+def init():
+    created = data.init()
+    if created:
+        data.update_ref("HEAD", data.RefValue(symbolic=True, value="refs/heads/master"))
+        return True
+    else:
+        return False
+
+
 def write_tree(directory="."):
     entries = []
     for entry in pathlib.Path(directory).iterdir():
