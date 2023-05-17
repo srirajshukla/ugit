@@ -195,9 +195,8 @@ def get_oid(name):
     ]
 
     for ref in refs_to_try:
-        rec_ref = data.get_ref(ref, deref=False).value
-        if rec_ref is not None:
-            return rec_ref
+        if data.get_ref(ref, deref=False).value:
+            return data.get_ref(ref).value
 
     # Check if the name is a sha1 hash or not
     # A SHA1 is a random 40-digit hexidecimal number
