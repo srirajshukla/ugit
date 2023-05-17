@@ -56,7 +56,7 @@ def update_ref(ref, value: RefValue, deref=True):
     # Get the last ref that points to an OID
     ref = _get_ref_internal(ref, deref)[0]
 
-    if not ref.value:
+    if not value.value:
         raise ValueError(f"Received no value for ref {ref}")
 
     if value.symbolic:
@@ -71,7 +71,7 @@ def update_ref(ref, value: RefValue, deref=True):
 
 
 def get_ref(ref, deref=True):
-    _get_ref_internal(ref, deref)[1]
+    return _get_ref_internal(ref, deref)[1]
 
 
 def _get_ref_internal(ref, deref=True):
