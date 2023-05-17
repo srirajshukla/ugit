@@ -55,6 +55,16 @@ def update_ref(ref, oid):
 
 
 def get_ref(ref):
+    # Refs can be either direct references to a commit or
+    # symbolic references to another ref
+    # Symbolic refs are in the format: "ref: {ref}"
+    # Direct refs simply contain the oid of the commit
+
     ref_path = GIT_DIR / ref
+    value = None
+
     if os.path.isfile(ref_path):
-        return ref_path.read_text().strip()
+        value = ref_path.read_text().strip()
+
+    if value and value.startwith("ref:"):
+        return get_ref(value.split(":", 1)[1].strip())
