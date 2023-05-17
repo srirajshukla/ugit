@@ -134,6 +134,17 @@ def is_branch(branch):
     return data.get_ref(f"refs/heads/{branch}").value is not None
 
 
+def get_branch_name():
+    HEAD = data.get_ref("HEAD", deref=False)
+    if not HEAD.symbolic:
+        return None
+
+    HEAD = HEAD.value
+    if not HEAD.startswith("refs/heads/"):
+        raise ValueError(f"HEAD ref {HEAD} is not a branch")
+    return os.path.relpath(HEAD, "refs/heads")
+
+
 Commit = namedtuple("Commit", ["tree", "parent", "message"])
 
 
