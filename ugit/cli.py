@@ -120,10 +120,10 @@ def k(args):
     dot = "digraph commits {\n"
     oids = set()
 
-    for refname, refoid in data.iter_refs():
+    for refname, ref in data.iter_refs():
         dot += f'"{refname}" [shape=note]\n'
-        dot += f'"{refname}" -> "{refoid}"\n'
-        oids.add(refoid)
+        dot += f'"{refname}" -> "{ref.value}"\n'
+        oids.add(ref.value)
 
     for oid in base.iter_commits_and_parents(oids):
         commit = base.get_commit(oid)
